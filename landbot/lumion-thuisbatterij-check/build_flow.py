@@ -1,17 +1,18 @@
 """Build the Lumion Thuisbatterij Check flow and write it to a Landbot bot.
 
 Usage:
-    LANDBOT_API_TOKEN=... python3 build_flow.py <bot_id>            # write
+    LANDBOT_API_TOKEN=... python3 build_flow.py <bot_id> <channel_id>   # write flow + channel welcome
     python3 build_flow.py --dry-run                                  # print diagram JSON
 
 Writes through PUT /v1/bots/{bot_id}/diagram/ (undocumented "Set Diagram" endpoint used by
-Landbot's builder). Qualification is routed through reply buttons instead of a Conditions block:
+Landbot's builder), then copies the first block into the channel's `welcome` messages: publishing a flow
+written this way does not update them, and the web chat starts from them. The flow still has to be
+published in the builder afterwards. Qualification is routed through reply buttons instead of a Conditions block:
 panels 8+ AND interest Thuisbatterij/Beide -> qualified; everything else -> not qualified.
 """
 import json
 import os
 import sys
-import urllib.parse
 import urllib.request
 import uuid
 
@@ -58,7 +59,7 @@ def ask(node_id, template, text, destination, error="Dat begreep ik niet helemaa
     params = {"text": text, "richText": f"<p>{text}</p>", "destination": destination,
               "errorText": error, "inputSize": "short"}
     if template == "var_phone":
-        params["extra"] = {"hasCountryFlag": True}
+        params["extra"] = {"hasCountryFlag": False}  # the flag picker defaults to +1 (US) and mangles Dutch numbers
     if template == "var_text":
         field(destination)
     nodes[node_id] = {"id": node_id, "path": node_id, "isTarget": True, "endpointType": "input",
@@ -123,10 +124,12 @@ ask("q_email", "var_email", "Wat is uw e-mailadres?", "email", "Vul alstublieft 
 ask("q_telefoon", "var_phone", "En op welk telefoonnummer kunnen we u bereiken?", "phone",
     "Vul alstublieft een geldig telefoonnummer in.")
 
-wa_text = ("Hallo Lumion, ik heb de Thuisbatterij Check gedaan. Naam: @name | Tel: @phone | E-mail: @email | "
-           "Postcode: @postcode | Woning: @woning_type | Panelen: @aantal_panelen | Verbruik: @stroomverbruik | "
-           "Interesse: @interesse | Terugleverkosten: @terugleverkosten | Reden: @reden")
-wa_link = f"https://wa.me/{WHATSAPP_NUMBER}?text=" + urllib.parse.quote(wa_text, safe="@|:")
+# Landbot only fills in @variables that stand alone between spaces, so the text stays unencoded here
+# ("@name%20" is not recognised); the browser encodes the spaces when the button opens the link.
+wa_text = ("Hallo Lumion, ik heb de Thuisbatterij Check gedaan. Naam: @name , Tel: @phone , E-mail: @email , "
+           "Postcode: @postcode , Woning: @woning_type , Panelen: @aantal_panelen , Verbruik: @stroomverbruik , "
+           "Interesse: @interesse , Terugleverkosten: @terugleverkosten , Reden: @reden")
+wa_link = f"https://wa.me/{WHATSAPP_NUMBER}?text={wa_text}"
 chat("whatsapp", [
     "Bedankt @name! Stuur uw gegevens nu direct naar Lumion via WhatsApp, dan neemt een adviseur "
     "binnen 1 werkdag contact met u op.",
@@ -170,15 +173,33 @@ link("nq_telefoon", "$success", "nq_bedankt")
 
 diagram = {"connections": connections, "nodes": nodes, "bricks": {}, "notes": {}, "customFields": fields}
 
+def welcome_messages():
+    """The channel's opening messages, built from the "welcome" node (texts, then the button question)."""
+    params = nodes["welcome"]["params"]
+    texts = [m["text"] for m in params["messages"]]
+    buttons = params["buttons"]
+    out = [{"samurai": -1, "extra": {"id": f"welcome_{i}", "welcome": True}, "type": "text", "message": t,
+            "rich_text": "<p>" + t.replace("\n", "<br>") + "</p>"} for i, t in enumerate(texts[:-1])]
+    out.append({"samurai": -1, "type": "dialog", "title": texts[-1],
+                "extra": {"id": f"welcome_{len(texts) - 1}", "buttons": {"includes": [None] * len(buttons)}, "welcome": True},
+                "buttons": [b["text"] for b in buttons], "payloads": [b["payload"] for b in buttons],
+                "urls": [None] * len(buttons)})
+    return out
+
+
+def api(method, path, body):
+    req = urllib.request.Request(
+        f"https://api.landbot.io/v1/{path}", method=method, data=json.dumps(body).encode(),
+        headers={"Authorization": f"Token {os.environ['LANDBOT_API_TOKEN']}", "Content-Type": "application/json",
+                 "User-Agent": "curl/8.5.0"})  # the default Python user agent is refused with 403
+    with urllib.request.urlopen(req) as r:
+        print(method, path, r.status, r.read().decode()[:200])
+
+
 if __name__ == "__main__":
     if "--dry-run" in sys.argv:
         print(json.dumps(diagram, indent=1, ensure_ascii=False))
         sys.exit(0)
-    bot_id = sys.argv[1]
-    req = urllib.request.Request(
-        f"https://api.landbot.io/v1/bots/{bot_id}/diagram/", method="PUT",
-        data=json.dumps({"diagram": diagram}).encode(),
-        headers={"Authorization": f"Token {os.environ['LANDBOT_API_TOKEN']}", "Content-Type": "application/json",
-                 "User-Agent": "curl/8.5.0"})
-    with urllib.request.urlopen(req) as r:
-        print(r.status, r.read().decode()[:500])
+    bot_id, channel_id = sys.argv[1], sys.argv[2]
+    api("PUT", f"bots/{bot_id}/diagram/", {"diagram": diagram})
+    api("PATCH", f"channels/{channel_id}/", {"welcome": welcome_messages()})
