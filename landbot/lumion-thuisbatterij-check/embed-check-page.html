@@ -1,0 +1,30 @@
+<!-- Lumion Thuisbatterij Check: full-screen Landbot for lumionenergy.nl/check
+     Paste into an Elementor "HTML" widget on a page with the "Elementor Canvas" template (no header/footer).
+     UTM parameters on the page URL (?utm_source=meta&utm_campaign=...) are passed to the bot as fields. -->
+<style>
+  html, body { margin:0; padding:0; height:100%; background:#F4F0EA; }
+</style>
+<script>
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var customData = {};
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid'].forEach(function (key) {
+      if (params.get(key)) customData[key] = params.get(key);
+    });
+    customData.landing_page = window.location.href.split('?')[0];
+
+    var s = document.createElement('script');
+    s.type = 'module';
+    s.async = true;
+    s.addEventListener('load', function () {
+      setTimeout(function () {
+        window.myLandbot = new Landbot.Fullpage({
+          configUrl: 'https://storage.googleapis.com/landbot.online/v3/H-3517892-X840ZNON622J674C/index.json',
+          customData: customData,
+        });
+      }, 500);
+    });
+    s.src = 'https://cdn.landbot.io/landbot-3/landbot-3.0.0.mjs';
+    document.body.appendChild(s);
+  })();
+</script>
