@@ -1,0 +1,144 @@
+<script>
+/* WhatsApp-style behaviour layer for the LUMION Thuisbatterij Check. Pairs with style.css.
+   1. writes attributes only (data-lb-ts, data-lb-daychip, body classes) so React-owned nodes are never re-parented;
+      the CSS renders the timestamp, ticks and "Vandaag" chip from those attributes;
+   2. reply buttons: the web chat renders them in the footer, WhatsApp shows them inside the bubble that asked, so the
+      buttons are cloned into the last bot bubble and every click is forwarded to the real (hidden) button. */
+(function(){
+  try {
+    if (window.__lbFootRan) return;
+    window.__lbFootRan = true;
+    /* The composer placeholder and the processing-state wording are CHANNEL SETTINGS, not CSS/JS:
+       Settings > Custom System Messages > text_input_placeholder / inline_input_placeholder / AI Interactions >
+       thinking_message (PATCH /v1/channels/<id>/ {"text": {...}}). PH here only labels the decorative bar. */
+    var PH = 'Typ een bericht';
+    var pad = function(n){ return (n < 10 ? '0' : '') + n; };
+    var hhmm = function(){ var d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+    var bar = document.createElement('div');
+    bar.id = 'lb-msg-composer'; bar.setAttribute('aria-hidden', 'true');
+    bar.innerHTML = '<div class="lb-msg-plus"></div><div class="lb-msg-pill">' + PH + '</div><div class="lb-msg-mic"></div>';
+    document.body.appendChild(bar);
+    /* The decorative bar has to sit in the SAME layout slot as the native one, or it spans the whole window while
+       the flow moves between blocks (VERIFIED 2026-09-17: 1440 px viewport, native 704 px centred vs 1440 px full width
+       for ~9 s per agent turn). So it is parked in the footer container, just above the branding line, not position:fixed. */
+    function placeBar(){
+      var foot = document.querySelector('[data-lb-part="window"] > .responsive-container:last-child');
+      if (!foot || bar.parentElement === foot) return;
+      var brand = foot.querySelector('[data-lb-part="branding"]');
+      var before = brand ? (brand.parentElement === foot ? brand : brand.closest('[data-lb-part="window"] > .responsive-container > *')) : null;
+      if (before && before.parentElement === foot) foot.insertBefore(bar, before); else foot.appendChild(bar);
+      stats.barPlaced++;
+    }
+    /* Both halves of the swap run in the same frame as the DOM change: park the bar and flip the class that reveals it.
+       On the tick alone the native input is gone for up to 400 ms before the decorative one appears, and the footer is empty. */
+    function syncComposer(){
+      placeBar();
+      var input = document.querySelector('[data-lb-part="input-field"] > input, [data-lb-part="input-field"] > textarea');
+      document.body.classList.toggle('lb-msg-nocomposer', !input);
+      /* v4's typing indicator is an unanchored bare <span> in the message list; the CSS hides it and the header
+         shows "typing…" instead, the way a messaging app does. Flipped here so it tracks the DOM change immediately. */
+      document.body.classList.toggle('lb-msg-typing', !!document.querySelector('[aria-label="Conversation messages"] > span'));
+      return input;
+    }
+    bar.addEventListener('click', function(){
+      var i = document.querySelector('[data-lb-part="input-field"] > input, [data-lb-part="input-field"] > textarea');
+      if (i) i.focus();
+    });
+
+    var stats = window.__lbMsg = { stamps: 0, restamped: 0, groupsBuilt: 0, reattached: 0, barPlaced: 0 };
+    var tsByKey = {};
+    var group = null, groupBubble = null, groupSig = '';
+    var answered = []; /* {key, node}: a messaging app keeps answered buttons under their bubble; React may drop our node on re-render */
+    var bubbleKey = function(b){ var t = b.querySelector('[data-lb-part="message-text"]'); return t ? t.textContent.trim() : ''; };
+    var label = function(b){ return (b.innerText || b.textContent || '').trim(); };
+    function lastBotBubble(){
+      var ms = document.querySelectorAll('[data-lb-part="message"][data-lb-author="bot"]');
+      for (var i = ms.length - 1; i >= 0; i--) {
+        var b = ms[i].querySelector('[data-lb-part="message-bubble"]');
+        if (b) return b;
+      }
+      return null;
+    }
+    function answer(){
+      if (!group) return;
+      group.setAttribute('data-state', 'answered');
+      if (groupBubble) answered.push({ key: bubbleKey(groupBubble), node: group });
+      var bs = group.querySelectorAll('.lb-msg-btn');
+      for (var i = 0; i < bs.length; i++) bs[i].disabled = true;
+      group = null; groupBubble = null; groupSig = '';
+    }
+    function reattach(){
+      for (var i = 0; i < answered.length; i++) {
+        var a = answered[i]; if (a.node.isConnected || !a.key) continue;
+        var bs = document.querySelectorAll('[data-lb-part="message"][data-lb-author="bot"] [data-lb-part="message-bubble"]');
+        for (var j = 0; j < bs.length; j++) {
+          if (bs[j] !== groupBubble && !bs[j].querySelector('.lb-msg-buttons') && bubbleKey(bs[j]) === a.key) {
+            bs[j].appendChild(a.node); bs[j].setAttribute('data-lb-msg-has-buttons', ''); stats.reattached++; break;
+          }
+        }
+      }
+    }
+    function syncButtons(){
+      var real = document.querySelectorAll('[data-lb-part="option-button"]');
+      if (!real.length) { answer(); document.body.classList.remove('lb-msg-inline'); return; }
+      var bubble = lastBotBubble();
+      if (!bubble) { document.body.classList.remove('lb-msg-inline'); return; }
+      var sig = [].map.call(real, label).join('');
+      if (group && group.isConnected && groupBubble === bubble && groupSig === sig) { document.body.classList.add('lb-msg-inline'); return; }
+      if (group && (groupBubble !== bubble || groupSig !== sig)) answer();
+      var g = document.createElement('div');
+      g.className = 'lb-msg-buttons';
+      for (var i = 0; i < real.length; i++) {
+        var row = document.createElement('div'); row.className = 'lb-msg-row';
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'lb-msg-btn' + (real[i].querySelector('svg') ? ' lb-msg-link' : '');
+        btn.textContent = label(real[i]);
+        btn.addEventListener('click', function(e){
+          var want = e.currentTarget.textContent;
+          var now = document.querySelectorAll('[data-lb-part="option-button"]');
+          for (var k = 0; k < now.length; k++) if (label(now[k]) === want) { now[k].click(); return; }
+        });
+        row.appendChild(btn); g.appendChild(row);
+      }
+      bubble.appendChild(g);
+      bubble.setAttribute('data-lb-msg-has-buttons', '');
+      group = g; groupBubble = bubble; groupSig = sig; stats.groupsBuilt++;
+      document.body.classList.add('lb-msg-inline');
+    }
+
+    var lastH = 0;
+    function render(){
+      var ts = hhmm();
+      /* stick to the newest bubble when late content (late image, cloned buttons) grows the thread, unless the visitor scrolled up */
+      var sc = document.querySelector('[aria-label="Scrollable conversation area"]');
+      if (sc) { if (sc.scrollHeight > lastH && sc.scrollTop + sc.clientHeight >= lastH - 120) sc.scrollTop = sc.scrollHeight; lastH = sc.scrollHeight; }
+      /* React re-creates some bubbles on re-render; remember each bubble's first-seen time by content so it never moves */
+      var fresh = document.querySelectorAll('[data-lb-part="message-bubble"]:not([data-lb-ts]), [data-lb-part="media"]:not([data-lb-ts])');
+      for (var k = 0; k < fresh.length; k++) {
+        var m = fresh[k].closest('[data-lb-part="message"]'), img = fresh[k].querySelector('img');
+        var key = (m ? m.getAttribute('data-lb-author') : '') + '|' + (fresh[k].getAttribute('data-lb-part') === 'media' ? (img ? img.src : '') : bubbleKey(fresh[k]));
+        var seen = (key.length > 2) ? tsByKey[key] : null;
+        if (seen) stats.restamped++; else { stats.stamps++; if (key.length > 2) tsByKey[key] = ts; }
+        fresh[k].setAttribute('data-lb-ts', seen || ts);
+      }
+      var first = document.querySelector('[data-lb-part="message"]');
+      if (first && !first.hasAttribute('data-lb-daychip')) first.setAttribute('data-lb-daychip', 'Vandaag');
+      syncButtons();
+      reattach();
+      placeBar();
+      var input = syncComposer();
+      /* Channel settings cover the agent's free-text input (text_input_placeholder), but an ask_question turn uses a
+         v4 built-in ("Answer the question") that the settings panel does not expose, so that one is patched here. */
+      if (input && input.getAttribute('placeholder') !== PH) input.setAttribute('placeholder', PH);
+    }
+    render();
+    setInterval(render, 400);
+    /* v4 re-creates the footer between blocks, which drops the parked bar; without this the composer is missing
+       for up to one tick and the layout jumps. The observer puts it back in the same frame. */
+    try {
+      new MutationObserver(function(){ syncComposer(); }).observe(document.body, { childList: true, subtree: true });
+    } catch (e) { stats.observer = String(e); }
+  } catch (err) { window.__lbFootErr = String(err); }
+})();
+</script>

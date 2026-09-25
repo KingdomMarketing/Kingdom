@@ -1,0 +1,207 @@
+/* lb-style: lumion-messaging */
+/* WhatsApp-style look for the LUMION Thuisbatterij Check. Pairs with foot.html.
+   Doodle wallpaper, transparent header, bubbles with a tail, reply buttons inside the bot bubble,
+   floating composer. Header name/avatar come from the channel design fields (brand_name, avatar_url).
+   Palette: wallpaper #F4F0EA - bot bubble #FFFFFF - user bubble #E3F4DA (Lumion light green)
+   - ink #111B21 - secondary #667781 - ticks #53BDEB - send/mic #4FA05A (Lumion green). */
+:root {
+  --background:transparent !important;
+  --foreground:#111B21 !important;
+  --muted:#667781 !important;
+  --muted-foreground:#667781 !important;
+  --border:#E9EDEF !important;
+  --button-color-primary-default:#4FA05A !important;
+  --button-color-primary-hover:#3E8A49 !important;
+  --button-color-primary-active:#3E8A49 !important;
+  --button-color-primary-disabled:#4FA05A !important;
+  --button-font-color-primary-disabled:#FFFFFF !important;
+  --button-border-color-primary-default:#4FA05A !important;
+  --button-font-color-primary-default:#FFFFFF !important;
+  --chat-bubble-color-font-bot:#111B21 !important;
+  --chat-bubble-surface-user:#E3F4DA !important;
+  --chat-bubble-border-color-user:#E3F4DA !important;
+  --chat-bubble-color-font-user:#111B21 !important;
+  --input-background-default:#FFFFFF !important;
+  --textarea-background-default:#FFFFFF !important;
+  --input-border-color-default:transparent !important;
+  --textarea-border-color-default:transparent !important;
+  --input-color-text-default:#111B21 !important;
+  --textarea-color-text-default:#111B21 !important;
+  --web-chat-header-background:transparent !important;
+  --web-chat-header-text-color:#111B21 !important;
+  --font-family-sans:-apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  --typography-font-family:-apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  --chat-bubble-font-family:-apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  --font-size:15px !important;
+  /* doodle wallpaper: tile drawn here in a warm beige, an original pattern */
+  --lb-msg-wallpaper:#F4F0EA url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'><g fill='none' stroke='%23E4DBCC' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='34' cy='30' r='9'/><path d='M22 62l7-14 7 14z'/><path d='M96 24l3.2 6.6 7.3 1-5.3 5.1 1.3 7.2-6.5-3.4-6.5 3.4 1.3-7.2-5.3-5.1 7.3-1z'/><path d='M150 38c-4-6-12-4-12 2 0 5 6 9 12 14 6-5 12-9 12-14 0-6-8-8-12-2z'/><path d='M206 30h16a7 7 0 000-13 10 10 0 00-19-2 6 6 0 00-3 11z'/><circle cx='258' cy='30' r='7'/><path d='M258 16v-6M258 50v-6M244 30h-6M278 30h-6'/><path d='M26 112l30-12-12 30-5-13z'/><rect x='84' y='96' width='30' height='22' rx='4'/><circle cx='99' cy='107' r='6'/><path d='M150 118V96l14-4v22'/><circle cx='146' cy='118' r='4'/><circle cx='160' cy='114' r='4'/><path d='M206 118c10-6 14-14 10-22-8 2-14 10-10 22z'/><path d='M206 118c-9-3-13-10-11-17 7 0 13 7 11 17z'/><path d='M254 94a12 12 0 00-8 21l8 9 8-9a12 12 0 00-8-21z'/><path d='M30 182l10-18 10 18a10 10 0 01-20 0z'/><rect x='84' y='168' width='28' height='26' rx='5'/><path d='M91 168v-6h14v6'/><path d='M154 160a16 16 0 10-12 27l-2 8 10-5a16 16 0 004-30z'/><path d='M208 160l-8 16h9l-4 14 14-18h-9z'/><circle cx='256' cy='176' r='11'/><path d='M252 176l3 3 6-7'/><path d='M22 240h24l-12-18z'/><path d='M84 236c0-8 6-12 12-12s12 4 12 12-6 12-12 16c-6-4-12-8-12-16z'/><rect x='140' y='228' width='28' height='20' rx='3'/><path d='M140 230l14 10 14-10'/><path d='M204 248c6-10 14-14 22-12-2 10-10 16-22 12z'/><path d='M204 248c-4-8-2-16 4-20 4 7 3 15-4 20z'/><circle cx='254' cy='238' r='10'/><path d='M254 232v6l4 3'/></g></svg>") repeat fixed;
+}
+
+html, body, [data-lb-part="window"] { background:var(--lb-msg-wallpaper) !important; background-size:190px 190px !important; }
+
+/* ANCHORS (plain) */
+[data-lb-part="window"] { border:none; border-radius:0; }
+[data-lb-part="header"] { background:transparent; color:#111B21; border-bottom:none; }
+[data-lb-part="message-text"] { font-size:15px; line-height:20px; color:#111B21; white-space:pre-line; overflow-wrap:anywhere; }
+[data-lb-part="message-text"] a { color:#027EB5; text-decoration:underline; word-break:break-all; }
+
+[data-lb-part="message-bubble"] {
+  position:relative; display:inline-flex; flex-wrap:wrap; align-items:flex-end; column-gap:8px;
+  max-width:85%; padding:6px 9px 7px 9px; border:none; box-shadow:0 1px .5px rgba(11,20,26,.13);
+}
+/* v4 sets one corner with a layered !important utility (!rounded-tl-xs / !rounded-br-xs, reading var(--radius-xs));
+   layered !important beats ours, so that corner is set through the token instead. */
+[data-lb-part="message"][data-lb-author="bot"] [data-lb-part="message-bubble"] { background:#FFFFFF; color:#111B21; border-radius:16px 16px 16px 0 !important; --radius-xs:16px; margin-left:10px; }
+[data-lb-part="message"][data-lb-author="user"] [data-lb-part="message-bubble"] { background:#E3F4DA; color:#111B21; border-radius:16px 16px 0 16px !important; --radius-xs:0px; margin-right:10px; }
+/* tails: the desktop messaging app curls them out of the BOTTOM corner */
+[data-lb-part="message"][data-lb-author="bot"] [data-lb-part="message-bubble"]::before {
+  content:""; position:absolute; bottom:0; left:-11px; width:12px; height:14px;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='14' viewBox='0 0 12 14'><path d='M12 0C12 7 9 11.5 1.6 13.2c-1 .2-1.1 .8-.2 .8H12Z' fill='%23FFFFFF'/></svg>") no-repeat left bottom;
+}
+[data-lb-part="message"][data-lb-author="user"] [data-lb-part="message-bubble"]::before {
+  content:""; position:absolute; bottom:0; right:-11px; width:12px; height:14px;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='14' viewBox='0 0 12 14'><path d='M0 0C0 7 3 11.5 10.4 13.2c-1 .2-1.1 .8 .2 .8H0Z' fill='%23E3F4DA'/></svg>") no-repeat right bottom;
+}
+/* timestamps: HH:MM written into data-lb-ts by the channel JS */
+[data-lb-part="message-bubble"] > * { order:0; }
+[data-lb-part="message-bubble"][data-lb-ts]::after {
+  content:attr(data-lb-ts); order:1; margin-left:auto; position:relative; top:4px; font-size:11px; line-height:15px; color:#667781; white-space:nowrap;
+}
+[data-lb-part="message"][data-lb-author="user"] [data-lb-part="message-bubble"][data-lb-ts]::after {
+  padding-right:19px;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2353BDEB' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12l4 4L14 7'/><path d='M9 16l3 3L22 8'/></svg>") no-repeat right center / 16px 16px;
+}
+/* day chip: data-lb-daychip set by the channel JS on the first message */
+[data-lb-part="message"][data-lb-daychip]::before {
+  content:attr(data-lb-daychip); display:block; width:max-content; margin:2px auto 10px; padding:6px 13px; border-radius:8px;
+  background:#FFFFFF; color:#111B21; font-size:12.5px; font-weight:500; line-height:16px; box-shadow:0 1px .5px rgba(11,20,26,.13);
+}
+[data-lb-part="message-timestamp"] { color:#667781; }
+
+[data-lb-part="media"] { border-radius:12px; overflow:hidden; border:4px solid #FFFFFF; box-shadow:0 1px .5px rgba(11,20,26,.13); background:#FFFFFF; }
+[data-lb-part="media-caption"] { color:#667781; }
+
+/* reply buttons — the anchored ones keep the the messaging app row look as a fallback; the real ones are cloned into the bubble below */
+[data-lb-part="options-group"] { background:transparent; border:none; box-shadow:none; padding:0; }
+[data-lb-part="options-prompt"] { display:none; } /* reply buttons carry no "Choose an option" line */
+[data-lb-part="options-list"] { display:flex; flex-direction:column; gap:6px; max-height:none; overflow:visible; }
+[data-lb-part="option-button"] {
+  width:100%; min-height:40px; margin:0; justify-content:center; text-align:center; background:#EBEBEB; color:#111B21;
+  font-size:14px; font-weight:400; border:none; border-radius:8px; box-shadow:none;
+}
+[data-lb-part="option-button"]:hover { background:#E1E1E1; color:#111B21; }
+[data-lb-part="option-button"][data-lb-state="selected"] { background:#D9D9D9; color:#111B21; }
+
+/* composer */
+[data-lb-part="input-field"] {
+  display:flex !important; flex-direction:row !important; align-items:flex-end !important; gap:8px !important; height:auto !important;
+  background:transparent !important; border:none !important; border-radius:0 !important; box-shadow:none !important;
+}
+[data-lb-part="free-text"] { resize:none; max-height:120px; }
+[data-lb-part="input-submit"] {
+  width:44px !important; height:44px !important; border-radius:50% !important; border:none !important; opacity:1 !important; color:#FFFFFF;
+  background:#4FA05A url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFFFFF'><path d='M3.4 20.4l17.45-7.48a1 1 0 000-1.84L3.4 3.6a.99.99 0 00-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z'/></svg>") no-repeat 55% center / 20px 20px !important;
+}
+[data-lb-part="input-submit"]:disabled {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='9' y='3' width='6' height='11' rx='3'/><path d='M5 11a7 7 0 0014 0M12 18v3'/></svg>") !important;
+  background-position:center !important; background-size:22px 22px !important;
+}
+[data-lb-part="input-submit"] svg { display:none; }
+[data-lb-part="input-error"] { color:#EA0038; }
+[data-lb-part="branding"] { color:#8696A0; font-size:11px; }
+[data-lb-part="branding"] a { color:#667781; }
+
+/* INPUT-ROW GUARD (mandatory, see REFERENCE §9): the submit wrapper has w-full and would collapse the input */
+[data-lb-part="input-field"] > input, [data-lb-part="input-field"] > textarea {
+  flex:1 1 0% !important; width:auto !important; min-width:0 !important;
+  min-height:44px !important; height:auto !important; padding:12px 44px 12px 16px !important; border-radius:22px !important;
+  font-size:15px !important; line-height:20px !important; color:#111B21 !important;
+  background:#FFFFFF url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238696A0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M8.5 14.5a4.5 4.5 0 007 0M9 9.5h.01M15 9.5h.01'/></svg>") no-repeat right 14px center / 21px 21px !important;
+}
+[data-lb-part="input-field"] > input::placeholder, [data-lb-part="input-field"] > textarea::placeholder { color:#8696A0 !important; opacity:1; }
+[data-lb-part="input-field"] > div { flex:0 0 auto !important; width:auto !important; max-width:none !important; padding:0 !important; }
+
+/* OFF-CATALOG [OFF-CATALOG] — web-chat internals (Tailwind layout classes, element types, :has() on wrappers); may break on any web-chat release */
+/* [OFF-CATALOG] 1:1 message threads show no avatar/name row above bot bubbles (gap: no anchor/option to hide the per-message author row) */
+[data-lb-author="bot"] > div:has([data-lb-part="message-avatar"]) { display:none !important; }
+/* [OFF-CATALOG] header: round 40px avatar, ink title on the wallpaper, round white menu button (decoration) (gap: no header-avatar / header-action anchors) */
+[data-lb-part="header"] [data-slot="avatar"] { width:40px !important; height:40px !important; border-radius:50% !important; overflow:hidden; }
+[data-lb-part="header"] h4 { font-size:16px !important; font-weight:600 !important; line-height:20px !important; color:#111B21; position:relative; }
+[data-lb-part="header"] > div { padding:10px 12px !important; }
+/* [OFF-CATALOG] typing indicator: v4 drops a bare, unanchored <span> ("Thinking...") into the message list;
+   a messaging app shows "typing…" under the contact name instead. The span is hidden and the header carries the state,
+   absolutely positioned so the header does not change height when it appears.
+   (gap: the typing indicator has no anchor, and no option puts it in the header.) */
+[aria-label="Conversation messages"] > span { display:none !important; }
+body.lb-msg-typing [data-lb-part="header"] h4::after {
+  content:"typt…"; position:absolute; left:0; top:100%; font-size:12px; font-weight:400; line-height:14px; color:#667781; white-space:nowrap;
+}
+[data-lb-part="header"] > div::after {
+  content:""; flex:0 0 34px; height:34px; border-radius:50%; box-shadow:0 1px .5px rgba(11,20,26,.13);
+  background:#FFFFFF url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23111B21'><circle cx='5' cy='12' r='1.7'/><circle cx='12' cy='12' r='1.7'/><circle cx='19' cy='12' r='1.7'/></svg>") no-repeat center / 18px 18px;
+}
+[data-lb-part="header"] + [data-slot="separator"] { display:none !important; }
+/* [OFF-CATALOG] thread density: a messaging app packs bubbles 4-6px apart, v4 uses 16px (gap: no message-list anchor) */
+[aria-label="Conversation messages"] { gap:6px !important; padding:10px 12px !important; }
+/* [OFF-CATALOG] no card behind the anchored options, and no search box (gap: no options-container anchor) */
+div:has(> [data-lb-part="options-group"]) { background:transparent !important; border:none !important; box-shadow:none !important; }
+[data-lb-part="options-group"] > div:has(> input) { display:none !important; }
+/* [OFF-CATALOG] composer floats on the wallpaper, with a decorative + button (gap: no composer/attachment anchors) */
+[data-lb-part="window"] > .responsive-container:has([data-lb-part="input-field"]) { background:transparent; padding:6px 8px 4px !important; }
+[data-lb-part="input-field"]::before {
+  content:""; flex:0 0 44px; height:44px; border-radius:50%; box-shadow:0 1px .5px rgba(11,20,26,.13);
+  background:#FFFFFF url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111B21' stroke-width='2' stroke-linecap='round'><path d='M12 5v14M5 12h14'/></svg>") no-repeat center / 20px 20px;
+}
+/* [OFF-CATALOG] a messaging app renders reply buttons INSIDE the bot bubble; v4 renders them in the footer. The channel JS
+   clones them into the last bot bubble and proxies the clicks to the real, hidden buttons.
+   (gap: options are a separate surface, with no way to attach them to the message that asked.) */
+body.lb-msg-inline div:has(> [data-lb-part="options-group"]) { display:none !important; }
+/* [OFF-CATALOG] v4 reveals a "Back" (go to previous question) ghost button on hover/focus under answered turns; a messaging app has none.
+   Hiding it removes that go-back affordance in this look. (gap: no anchor/option to switch the back control off) */
+[aria-label="Conversation messages"] div:has(> button[data-slot="button"][data-size="sm"]) { display:none !important; }
+[data-lb-part="message-bubble"][data-lb-msg-has-buttons] { width:85%; padding-bottom:0 !important; }
+.lb-msg-buttons { order:2; flex:0 0 calc(100% + 18px); margin:7px -9px 0; border-top:1px solid #E9EDEF; }
+.lb-msg-buttons .lb-msg-row { padding:6px 7px; }
+.lb-msg-buttons .lb-msg-row + .lb-msg-row { border-top:1px solid #E9EDEF; }
+.lb-msg-btn {
+  position:relative; display:flex; align-items:center; justify-content:center; width:100%; min-height:34px; padding:6px 30px;
+  border:none; border-radius:8px; background:#EBEBEB; color:#111B21; cursor:pointer; text-align:center;
+  font:400 14px/18px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.lb-msg-btn::before {
+  content:""; position:absolute; left:10px; top:50%; transform:translateY(-50%); width:16px; height:16px;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667781' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M9 14L4 9l5-5'/><path d='M4 9h8a8 8 0 018 8v2'/></svg>") no-repeat center / 16px 16px;
+}
+.lb-msg-btn.lb-msg-link::before {
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667781' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M14 4h6v6'/><path d='M20 4l-9 9'/><path d='M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5'/></svg>");
+}
+.lb-msg-btn:hover { background:#E1E1E1; }
+.lb-msg-buttons[data-state="answered"] .lb-msg-btn { cursor:default; color:#54656F; }
+/* [OFF-CATALOG] decorative composer while the native input is hidden (buttons turns); body.lb-msg-nocomposer + #lb-msg-composer come from the channel JS */
+#lb-msg-composer { display:none; }
+body.lb-msg-nocomposer #lb-msg-composer {
+  display:flex; align-items:center; gap:8px; width:100%; box-sizing:border-box; background:transparent;
+  font-family:-apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+body.lb-msg-nocomposer #lb-msg-composer .lb-msg-plus {
+  flex:0 0 44px; height:44px; border-radius:50%; box-shadow:0 1px .5px rgba(11,20,26,.13);
+  background:#FFFFFF url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111B21' stroke-width='2' stroke-linecap='round'><path d='M12 5v14M5 12h14'/></svg>") no-repeat center / 20px 20px;
+}
+body.lb-msg-nocomposer #lb-msg-composer .lb-msg-pill {
+  flex:1 1 auto; min-height:44px; display:flex; align-items:center; padding:0 44px 0 16px; border-radius:22px; color:#8696A0; font-size:15px; cursor:text;
+  box-shadow:0 1px .5px rgba(11,20,26,.13);
+  background:#FFFFFF url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238696A0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M8.5 14.5a4.5 4.5 0 007 0M9 9.5h.01M15 9.5h.01'/></svg>") no-repeat right 14px center / 21px 21px;
+}
+body.lb-msg-nocomposer #lb-msg-composer .lb-msg-mic {
+  flex:0 0 44px; height:44px; border-radius:50%;
+  background:#4FA05A url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='9' y='3' width='6' height='11' rx='3'/><path d='M5 11a7 7 0 0014 0M12 18v3'/></svg>") no-repeat center / 22px 22px;
+}
+/* the bar is in the footer's own container (parked there by the channel JS), so it inherits the thread's width and
+   centring at every viewport and nothing has to be measured or reserved */
+body.lb-msg-nocomposer [data-lb-part="window"] > .responsive-container:last-child { padding:6px 8px 4px !important; }
+
+/* SCROLLBARS (thin, soft grey) */
+* { scrollbar-width:thin; scrollbar-color:#C4CCD1 transparent; }
+*::-webkit-scrollbar { width:6px; height:6px; }
+*::-webkit-scrollbar-track { background:transparent; }
+*::-webkit-scrollbar-thumb { background:#C4CCD1; border-radius:6px; }
