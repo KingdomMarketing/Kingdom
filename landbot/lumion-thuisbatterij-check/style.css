@@ -132,7 +132,7 @@ html, body, [data-lb-part="window"] { background:var(--lb-msg-wallpaper) !import
    a messaging app shows "typing…" under the contact name instead. The span is hidden and the header carries the state,
    absolutely positioned so the header does not change height when it appears.
    (gap: the typing indicator has no anchor, and no option puts it in the header.) */
-[aria-label="Conversation messages"] > span { display:none !important; }
+body.lb-msg-js [aria-label="Conversation messages"] > span { display:none !important; } /* only when the channel JS runs and shows "typt…" in the header */
 body.lb-msg-typing [data-lb-part="header"] h4::after {
   content:"typt…"; position:absolute; left:0; top:100%; font-size:12px; font-weight:400; line-height:14px; color:#667781; white-space:nowrap;
 }

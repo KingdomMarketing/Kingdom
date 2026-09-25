@@ -8,6 +8,7 @@
   try {
     if (window.__lbFootRan) return;
     window.__lbFootRan = true;
+    document.body.classList.add('lb-msg-js');
     /* The composer placeholder and the processing-state wording are CHANNEL SETTINGS, not CSS/JS:
        Settings > Custom System Messages > text_input_placeholder / inline_input_placeholder / AI Interactions >
        thinking_message (PATCH /v1/channels/<id>/ {"text": {...}}). PH here only labels the decorative bar. */
