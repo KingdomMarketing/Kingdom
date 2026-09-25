@@ -206,6 +206,11 @@ body.lb-msg-nocomposer [data-lb-part="window"] > .responsive-container:last-chil
 *::-webkit-scrollbar-track { background:transparent; }
 *::-webkit-scrollbar-thumb { background:#C4CCD1; border-radius:6px; }
 
+/* HEADER SUBTITLE: v4 shows only the channel tagline ("Henk van Lumion") as the title; the role line sits under it like a
+   WhatsApp status line. When the channel JS runs, "typt…" replaces it while the bot is typing. */
+[data-lb-part="header"] h4::after { content:"Thuisbatterij-adviseur"; position:absolute; left:0; top:100%; font-size:12px; font-weight:400; line-height:14px; color:#667781; white-space:nowrap; }
+body.lb-msg-typing [data-lb-part="header"] h4::after { content:"typt…"; }
+
 /* AVATAR: square Lumion battery icon (avatar.png), set here because the channel logo field only accepts a URL
    and Lumion's own square logo crops the wordmark ("L" next to the battery). */
 [data-lb-part="header"] [data-slot="avatar"], [data-lb-part="message-avatar"] { border-radius:50% !important; overflow:hidden; background:#FFFFFF; }

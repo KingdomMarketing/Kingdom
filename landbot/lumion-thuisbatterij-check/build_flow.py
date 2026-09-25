@@ -78,7 +78,7 @@ def link_buttons(src, dst, indexes):
 # ---- flow -------------------------------------------------------------------
 
 chat("welcome", [
-    "Hallo! 👋 Welkom bij de Thuisbatterij Check van Lumion.",
+    "Hoi! Ik ben Henk van Lumion 👋 Welkom bij de Thuisbatterij Check.",
     "Saldering stopt op 1 januari 2027. Weet binnen 1 minuut of een thuisbatterij voor u loont: "
     "uw besparing, terugverdientijd en welke batterij bij uw verbruik past.",
     "⭐ 4,9 / 5 · 120+ installaties\n✓ 100% gratis ✓ Vrijblijvend ✓ Onafhankelijk advies\n\n"
