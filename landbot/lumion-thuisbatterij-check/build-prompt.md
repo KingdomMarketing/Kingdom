@@ -105,3 +105,11 @@ small script (`foot.html`), modelled on the reference bot:
 Already applied to channel 3516908 ("Lumion Thuisbatterij Check") via
 `PATCH https://api.landbot.io/v1/channels/3516908/` with `style`, `foot`, `design`, `text`,
 `brand_name` and `tagline`.
+
+### Channel settings on "Thuisbatterij check V2" (channel 3517892)
+
+- `brand_name`: "Henk van Lumion", `tagline`: "Thuisbatterij-adviseur"
+- `typing_options`: `{"state": true, "delay": {"is_constant": false, "constant": 2,
+  "average_human_reading_speed": 150, "max_delay": 3.5}}`. The typing dots show for as long as it takes to
+  read the message at 150 words per minute, up to 3.5 s (Landbot default: 300 wpm, max 1.5 s).
+  The first message of a sequence always appears without delay.
