@@ -86,11 +86,13 @@ html, body, [data-lb-part="window"] { background:var(--lb-msg-wallpaper) !import
 [data-lb-part="options-prompt"] { display:none; } /* reply buttons carry no "Choose an option" line */
 [data-lb-part="options-list"] { display:flex; flex-direction:column; gap:6px; max-height:none; overflow:visible; }
 [data-lb-part="option-button"] {
-  width:100%; min-height:40px; margin:0; justify-content:center; text-align:center; background:#EBEBEB; color:#111B21;
-  font-size:14px; font-weight:400; border:none; border-radius:8px; box-shadow:none;
+  width:100%; min-height:44px; margin:0; justify-content:center; text-align:center; background:#2F7D3B; color:#FFFFFF;
+  font-size:15px; font-weight:600; border:none; border-radius:22px; box-shadow:0 1px 2px rgba(11,20,26,.18);
 }
-[data-lb-part="option-button"]:hover { background:#E1E1E1; color:#111B21; }
-[data-lb-part="option-button"][data-lb-state="selected"] { background:#D9D9D9; color:#111B21; }
+[data-lb-part="option-button"] * { color:#FFFFFF !important; }
+[data-lb-part="option-button"] > span { flex-grow:0 !important; text-align:center !important; }
+[data-lb-part="option-button"]:hover { background:#276B31; color:#FFFFFF; }
+[data-lb-part="option-button"][data-lb-state="selected"] { background:#1F5A28; color:#FFFFFF; }
 
 /* composer */
 [data-lb-part="input-field"] {
@@ -165,18 +167,18 @@ body.lb-msg-inline div:has(> [data-lb-part="options-group"]) { display:none !imp
 .lb-msg-buttons .lb-msg-row + .lb-msg-row { border-top:1px solid #E9EDEF; }
 .lb-msg-btn {
   position:relative; display:flex; align-items:center; justify-content:center; width:100%; min-height:34px; padding:6px 30px;
-  border:none; border-radius:8px; background:#EBEBEB; color:#111B21; cursor:pointer; text-align:center;
+  border:none; border-radius:8px; background:#2F7D3B; color:#FFFFFF; cursor:pointer; text-align:center; font-weight:600;
   font:400 14px/18px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 .lb-msg-btn::before {
   content:""; position:absolute; left:10px; top:50%; transform:translateY(-50%); width:16px; height:16px;
-  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667781' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M9 14L4 9l5-5'/><path d='M4 9h8a8 8 0 018 8v2'/></svg>") no-repeat center / 16px 16px;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M9 14L4 9l5-5'/><path d='M4 9h8a8 8 0 018 8v2'/></svg>") no-repeat center / 16px 16px;
 }
 .lb-msg-btn.lb-msg-link::before {
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667781' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M14 4h6v6'/><path d='M20 4l-9 9'/><path d='M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5'/></svg>");
 }
-.lb-msg-btn:hover { background:#E1E1E1; }
-.lb-msg-buttons[data-state="answered"] .lb-msg-btn { cursor:default; color:#54656F; }
+.lb-msg-btn:hover { background:#276B31; }
+.lb-msg-buttons[data-state="answered"] .lb-msg-btn { cursor:default; background:#8FB996; color:#FFFFFF; }
 /* [OFF-CATALOG] decorative composer while the native input is hidden (buttons turns); body.lb-msg-nocomposer + #lb-msg-composer come from the channel JS */
 #lb-msg-composer { display:none; }
 body.lb-msg-nocomposer #lb-msg-composer {
@@ -210,6 +212,25 @@ body.lb-msg-nocomposer [data-lb-part="window"] > .responsive-container:last-chil
    WhatsApp status line. When the channel JS runs, "typt…" replaces it while the bot is typing. */
 [data-lb-part="header"] h4::after { content:"Thuisbatterij-adviseur"; position:absolute; left:0; top:100%; font-size:12px; font-weight:400; line-height:14px; color:#667781; white-space:nowrap; }
 body.lb-msg-typing [data-lb-part="header"] h4::after { content:"typt…"; }
+
+/* INTRO: the opening block arrives all at once (the web chat renders the channel welcome locally, without typing).
+   While the thread holds only those three messages, messages 2 and 3 and the reply buttons are revealed one by one
+   with a typing bubble in between, so Henk "types" the intro. Scoped to the intro: once a 4th row exists the rules stop
+   matching and everything renders normally. Rows = direct children of the message list, one per message. */
+@keyframes lb-intro-reveal { from { opacity:0; max-height:0; overflow:hidden; margin:0; padding:0; } to { opacity:1; max-height:1500px; } }
+@keyframes lb-intro-dots { 0% { opacity:0; max-height:0; margin:0; } 12%, 96% { opacity:1; max-height:60px; margin:6px 0 0 10px; } 100% { opacity:0; max-height:0; margin:0; } }
+body:not(:has([aria-label="Conversation messages"] > :nth-child(4))) [aria-label="Conversation messages"] > :nth-child(2) { animation:lb-intro-reveal .35s ease-out 2.3s both; }
+body:not(:has([aria-label="Conversation messages"] > :nth-child(4))) [aria-label="Conversation messages"] > :nth-child(3) { animation:lb-intro-reveal .35s ease-out 4.6s both; }
+body:not(:has([aria-label="Conversation messages"] > :nth-child(4))) div:has(> [data-lb-part="options-group"]) { animation:lb-intro-reveal .35s ease-out 4.9s both; }
+body:not(:has([aria-label="Conversation messages"] > :nth-child(4))) [aria-label="Conversation messages"] > :nth-child(1)::after,
+body:not(:has([aria-label="Conversation messages"] > :nth-child(4))) [aria-label="Conversation messages"] > :nth-child(2)::after {
+  content:""; display:block; width:62px; height:36px; overflow:hidden; border-radius:16px 16px 16px 0; background-color:#FFFFFF;
+  box-shadow:0 1px .5px rgba(11,20,26,.13);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='62' height='36' viewBox='0 0 62 36'><g fill='%238696A0'><circle cx='19' cy='18' r='4'><animate attributeName='opacity' values='.3;1;.3' dur='1.2s' repeatCount='indefinite'/></circle><circle cx='31' cy='18' r='4'><animate attributeName='opacity' values='.3;1;.3' dur='1.2s' begin='.2s' repeatCount='indefinite'/></circle><circle cx='43' cy='18' r='4'><animate attributeName='opacity' values='.3;1;.3' dur='1.2s' begin='.4s' repeatCount='indefinite'/></circle></g></svg>");
+  background-repeat:no-repeat;
+}
+body:not(:has([aria-label="Conversation messages"] > :nth-child(4))) [aria-label="Conversation messages"] > :nth-child(1)::after { animation:lb-intro-dots 1.9s linear .4s both; }
+body:not(:has([aria-label="Conversation messages"] > :nth-child(4))) [aria-label="Conversation messages"] > :nth-child(2)::after { animation:lb-intro-dots 1.9s linear 2.7s both; }
 
 /* AVATAR: square Lumion battery icon (avatar.png), set here because the channel logo field only accepts a URL
    and Lumion's own square logo crops the wordmark ("L" next to the battery). */
